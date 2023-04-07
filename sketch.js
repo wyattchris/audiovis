@@ -83,9 +83,10 @@ function draw() {
   }
   */
 
-  micLevel = mic.getLevel()
-  stroke(255)
+  // micLevel = mic.getLevel()
+  stroke(255, 255, 255, 255) // won't be white?
   text(micLevel*10,0,0)
+  
   // slightly rotates bg based on lowEndlitude 
   push()
   if (lowEnd > 230) {
