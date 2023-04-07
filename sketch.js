@@ -34,6 +34,7 @@ function setup() {
 function draw() {
   background(0)
   translate(width / 2, height / 2)
+
   // respond to low frequency between 20,200
   spectrum = fft.analyze()
   lowEnd = fft.getEnergy(20, 200)
@@ -42,6 +43,7 @@ function draw() {
   //I want the spectrum to be displayed
   strokeWeight(5)
   noFill()
+
   //beginShape()
   /*
   for (let i = 0; i < spectrum.length; i++) 
@@ -54,8 +56,8 @@ function draw() {
   */
   //rectangle as background, fill color determined by low frequencies
   
-  colorMode(HSB)
-  fill(lowEnd, 250, lowEnd, 1)
+  colorMode(RGB)
+  fill(48 + lowEnd, 25, 100)
   rect(0, 0, width, height)
   
   colorMode(RGB)
@@ -82,8 +84,7 @@ function draw() {
   */
 
   micLevel = mic.getLevel()
-  fill(255)
-  noStroke()
+  stroke(255)
   text(micLevel*10,0,0)
   // slightly rotates bg based on lowEndlitude 
   push()
@@ -128,7 +129,7 @@ function draw() {
   // creates new particle and adds to the array
   //flying things
   
-  /*var p = new Particle()
+  var p = new Particle()
   particles.push(p)
 
   // shows the particles on canvas
@@ -140,7 +141,7 @@ function draw() {
     else {
       particles.splice(i, 1)
     }
-  }*/
+  }
 } 
 
 /*function mouseClicked() {
