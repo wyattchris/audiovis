@@ -5,49 +5,103 @@ var particles = []
 
 // loads the song
 function preload() {
-  song = loadSound('take-me-home.mp3')
+  //song = loadSound('drak.wav')
 
-  // swithc image to a song
+  // imageLoad
   img = loadImage('blue-bg.jpeg')
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  let cnv = createCanvas(windowWidth, windowHeight)
+  //let cnv = createCanvas(windowWidth, windowHeight, WEBGL)
+  //Mic start
+  cnv.mousePressed(userStartAudio)
+  mic = new p5.AudioIn()
+  let sources = mic.getSources()
+  //mic.setSource(1)
+  mic.start()
+
   angleMode(DEGREES)
   imageMode(CENTER)
   rectMode(CENTER)
+  textAlign(CENTER, CENTER)
+  textSize(width/20)
   fft = new p5.FFT(0.1)
-
+  fft.setInput(mic)
   img.filter(BLUR, 12)
 }
 
 function draw() {
-  background(0);
-
-  // to put circle in center
+  background(0)
   translate(width / 2, height / 2)
+  // respond to low frequency between 20,200
+  spectrum = fft.analyze()
+  lowEnd = fft.getEnergy(20, 200)
+  centroid = fft.getCentroid()
+  
+  //I want the spectrum to be displayed
+  strokeWeight(5)
+  noFill()
+  //beginShape()
+  /*
+  for (let i = 0; i < spectrum.length; i++) 
+  {
+  
+    //var mappedCent = floor(map(i, 0, 180, 0, spectrum.length -1))
+    var freqH = map(spectrum[i], 0,255, 0,200)
+    rect(150,height-50, width/spectrum.length, spectrum[i])
+  }
+  */
+  //rectangle as background, fill color determined by low frequencies
+  
+  colorMode(HSB)
+  fill(lowEnd, 250, lowEnd, 1)
+  rect(0, 0, width, height)
+  
+  colorMode(RGB)
+  noiseScale = .02
+  
+  /*
+  for (x = -width/2; x < width/2; x++)
+  {
+    for (i = 0; i < spectrum.length; i++)
+    {
+    var spAmp = spectrum[i] * 300
+    stroke(noiseNum*255)
+    rect(x, height/2, 1, spAmp)
+    }
+  }
+  */
+  
+  /*
+  for (let x=-width/2; x < width; x++) {
+    let noiseVal = noise((mouseX+x)*noiseScale, mouseY*noiseScale);
+    stroke(noiseVal*255);
+    line(x, mouseY+noiseVal*80, x, height);
+  }
+  */
 
-  // respond to low frequency
-  fft.analyze()
-  amp = fft.getEnergy(20, 200)
-
-  // slightly rotates bg based on amplitude 
+  micLevel = mic.getLevel()
+  fill(255)
+  noStroke()
+  text(micLevel*10,0,0)
+  // slightly rotates bg based on lowEndlitude 
   push()
-  if (amp > 230) {
+  if (lowEnd > 230) {
     rotate(random(-0.5, 0.5))
   }
 
-  image(img, 0, 0, width + 100, height + 100)
+  //image(img, 0, 0, width + 100, height + 100)
   pop()
 
   // rectangle
-  var alpha = map(amp, 0, 255, 180, 150)
+  var alpha = map(lowEnd, 0, 255, 180, 150)
   fill(0, alpha)
   noStroke()
   rect(0, 0, width, height)
 
   stroke(255)
-  strokeWeight(10)
+  strokeWeight(5)
   noFill()
 
   // gets the waveform as an array
@@ -60,8 +114,10 @@ function draw() {
     for (var i = 0; i < 180; i += 0.5) {
       var index = floor(map(i, 0, 180, 0, wave.length -1))
   
-      var r = map(wave[index], -1, 1, 150, 350)
+      var r = map(wave[index], -1, 1, 150, 300)
   
+      //Mapping to polar coordinates?
+
       var x = r * sin(i) * t
       var y = r * cos(i)
       vertex(x, y)
@@ -70,22 +126,24 @@ function draw() {
   }
 
   // creates new particle and adds to the array
-  var p = new Particle()
+  //flying things
+  
+  /*var p = new Particle()
   particles.push(p)
 
   // shows the particles on canvas
   for (var i = particles.length - 1; i >= 0; i--) {
     if (!particles[i].edges()) {
-      particles[i].update(amp > 230)
+      particles[i].update(lowEnd > 230)
       particles[i].show()
     }
     else {
       particles.splice(i, 1)
     }
-  }
-}
+  }*/
+} 
 
-function mouseClicked() {
+/*function mouseClicked() {
   if (song.isPlaying()) {
     song.pause()
     noLoop()
@@ -95,6 +153,7 @@ function mouseClicked() {
     loop()
   }
 }
+*/
 
 class Particle {
   constructor() {
