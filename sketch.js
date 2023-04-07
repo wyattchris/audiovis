@@ -8,7 +8,7 @@ function preload() {
   //song = loadSound('drak.wav')
 
   // imageLoad
-  img = loadImage('blue-bg.jpeg')
+  //img = loadImage('blue-bg.jpeg')
 }
 
 function setup() {
