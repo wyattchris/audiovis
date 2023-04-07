@@ -3,7 +3,7 @@ var img
 var fft
 var particles = []
 let vectors = []
-const num = 3000
+const num = 5000
 const noiseScale = 0.01
 // loads the song
 
@@ -29,7 +29,7 @@ function setup() {
   rectMode(CENTER)
   textAlign(CENTER, CENTER)
   textSize(width/20)
-  fft = new p5.FFT(0.1)
+  fft = new p5.FFT(0.9)
   fft.setInput(mic)
   //img.filter(BLUR, 12)
   //colorMode(RGB)
@@ -39,6 +39,7 @@ function setup() {
   {
     vectors.push(createVector(random(-width,width), random(-height,height)))
   }
+
   stroke(255)
 }
 
@@ -51,13 +52,11 @@ function draw() {
   // respond to low frequency between 20,200
   spectrum = fft.analyze()
   lowEnd = fft.getEnergy(20, 200)
+  stroke(50 + lowEnd)
+
   centroid = fft.getCentroid()
   
   //I want the spectrum to be displayed
-  
-
-  
-
 
   //beginShape()
   /*
@@ -74,7 +73,6 @@ function draw() {
   //noStroke()
   //fill(48 + lowEnd, 25, 100)
   //rect(0, 0, width, height)
-  
 
   
   //Background Perlin noise vectors
@@ -92,8 +90,6 @@ function draw() {
     }
   }
 
-
-
   // micLevel = mic.getLevel()
   // text(micLevel*10,0,0)
   
@@ -102,39 +98,26 @@ function draw() {
     rotate(random(-0.5, 0.5))
   }
 
-  //image(img, 0, 0, width + 100, height + 100)
-
-  // rectangle
-  // var alpha = map(lowEnd, 0, 255, 180, 150)
-  // fill(0, alpha)
-  // noStroke()
-  // rect(0, 0, width, height)
-
-  // stroke(255)
-  // strokeWeight(5)
-  //noFill()
-
   // gets the waveform as an array
   var wave = fft.waveform()
 
   // connects all the points with a line
-  // iterates to 180 because that is degree of 1/2 circ
+  // iterates to 180 because that is degree of 1/2 circle
+  stroke(255)
+  noFill()
   for (var t = -1; t <= 1; t += 2) {
     beginShape()
     for (var i = 0; i < 180; i += 0.1) {
       var index = floor(map(i, 0, 180, 0, wave.length -1))
   
       var r = map(wave[index], -1, 1, 150, 300)
-  
-      //Mapping to polar coordinates?
 
       var x = r * sin(i) * t
-      var y = r * cos(i) *t
+      var y = r * cos(i) * t
       vertex(x, y)
     }
     endShape()
   }
-
 }
 
 function onScreen(v) {
