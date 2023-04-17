@@ -3,37 +3,33 @@ var img
 var fft
 var particles = []
 let vectors = []
-const num = 5000
+let gradient
+const num = 3000
 const noiseScale = 0.01
-// loads the song
 
 function preload() {
   //song = loadSound('drak.wav')
-
-  // imageLoad
-  //img = loadImage('blue-bg.jpeg')
+  img = loadImage('glitchImage.jpg')
 }
 
 function setup() {
   let cnv = createCanvas(windowWidth, windowHeight)
-  //let cnv = createCanvas(windowWidth, windowHeight, WEBGL)
-  //Mic start
   cnv.mousePressed(userStartAudio)
   mic = new p5.AudioIn()
-  let sources = mic.getSources()
-  //mic.setSource(1)
   mic.start()
-
+  for (let j = 0; j < 5; j++)
+  {
+    img.filter(ERODE)
+  }
+  
   angleMode(DEGREES)
-  //imageMode(CENTER)
   rectMode(CENTER)
   textAlign(CENTER, CENTER)
   textSize(width/20)
-  fft = new p5.FFT(0.1)
+  fft = new p5.FFT(0.9, 1024)
   fft.setInput(mic)
-  //img.filter(BLUR, 12)
-  //colorMode(RGB)
 
+  gradient = createConicGradient(PI,width/2,height/2)
 
   for(let i = 0; i < num; i++)
   {
@@ -44,38 +40,27 @@ function setup() {
 }
 
 function draw() {
-  background(0, 8)
-
-  //center is at 0,0
   translate(width / 2, height / 2)
-
-  // respond to low frequency between 20,200
+  
+  noStroke()
   spectrum = fft.analyze()
   lowEnd = fft.getEnergy("bass")
-  stroke(lowEnd)
-
-  centroid = fft.getCentroid()
+  background(img, 30)
+  //image(glitch.image,-width/2,-height/2,width,height)
   
-  //I want the spectrum to be displayed
-
-  //beginShape()
-  /*
-  for (let i = 0; i < spectrum.length; i++) 
-  {
   
-    //var mappedCent = floor(map(i, 0, 180, 0, spectrum.length -1))
-    var freqH = map(spectrum[i], 0,255, 0,200)
-    rect(150,height-50, width/spectrum.length, spectrum[i])
-  }
-  */
+  //center is at 0,0
 
-  //rectangle as background, fill color determined by low frequencies
-  //noStroke()
-  //fill(48 + lowEnd, 25, 100)
-  //rect(0, 0, width, height)
-
+  // respond to low frequency between 20,200
+  
+  gradient.colors(0,"lightblue",0.6, "magenta", 0.8, "white")
+  
+  
   
   //Background Perlin noise vectors
+  let lowEndFactor = map(lowEnd,0,250, 0,1000)
+  stroke(255)
+  fill(255)
   const speed = lowEnd/128
   strokeWeight(1.5)
   for(let z = 0; z < num; z++) {
@@ -91,27 +76,22 @@ function draw() {
     }
   }
 
-  // micLevel = mic.getLevel()
-  // text(micLevel*10,0,0)
-  
-  // slightly rotates bg based on lowEndlitude 
-
-
   // gets the waveform as an array
   var wave = fft.waveform()
 
   // connects all the points with a line
   // iterates to 180 because that is degree of 1/2 circle
   //Circle
-  stroke(255)
-  strokeWeight(0.1+lowEnd/128)
   noFill()
+  strokeGradient(gradient)
+  //stroke(255)
+  strokeWeight(5)
   for (var t = -1; t <= 1; t += 2) {
     beginShape()
     for (var i = 0; i < 180; i += 0.1) {
       var index = floor(map(i, 0, 180, 0, wave.length -1))
   
-      var r = map(wave[index], -1, 1, 50, 300)
+      var r = map(wave[index], -1, 1, 100, 250)
 
       var x = r * sin(i) * t
       var y = r * cos(i) * t
