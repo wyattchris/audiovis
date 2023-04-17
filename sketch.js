@@ -4,7 +4,7 @@ var fft
 var particles = []
 let vectors = []
 let gradient
-const num = 3000
+const num = 5000
 const noiseScale = 0.01
 
 function preload() {
@@ -52,8 +52,8 @@ function draw() {
   //center is at 0,0
 
   // respond to low frequency between 20,200
-  
-  gradient.colors(0,"lightblue",0.6, "magenta", 0.8, "white")
+  lowEndGrad = map(lowEnd,0,250,0.5,0.8)
+  gradient.colors(0,"lightblue",0.6, "magenta", 0.6, "white")
   
   
   
