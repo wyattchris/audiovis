@@ -29,7 +29,7 @@ function setup() {
   rectMode(CENTER)
   textAlign(CENTER, CENTER)
   textSize(width/20)
-  fft = new p5.FFT(0.9)
+  fft = new p5.FFT(0.1)
   fft.setInput(mic)
   //img.filter(BLUR, 12)
   //colorMode(RGB)
@@ -44,15 +44,15 @@ function setup() {
 }
 
 function draw() {
-  background(0, 10)
+  background(0, 8)
 
   //center is at 0,0
   translate(width / 2, height / 2)
 
   // respond to low frequency between 20,200
   spectrum = fft.analyze()
-  lowEnd = fft.getEnergy(20, 200)
-  stroke(50 + lowEnd)
+  lowEnd = fft.getEnergy("bass")
+  stroke(lowEnd)
 
   centroid = fft.getCentroid()
   
@@ -76,7 +76,8 @@ function draw() {
 
   
   //Background Perlin noise vectors
-  const speed = 1
+  const speed = lowEnd/128
+  strokeWeight(1.5)
   for(let z = 0; z < num; z++) {
     let v = vectors[z]
     point(v.x, v.y)
@@ -94,23 +95,23 @@ function draw() {
   // text(micLevel*10,0,0)
   
   // slightly rotates bg based on lowEndlitude 
-  if (lowEnd > 230) {
-    rotate(random(-0.5, 0.5))
-  }
+
 
   // gets the waveform as an array
   var wave = fft.waveform()
 
   // connects all the points with a line
   // iterates to 180 because that is degree of 1/2 circle
+  //Circle
   stroke(255)
+  strokeWeight(0.1+lowEnd/128)
   noFill()
   for (var t = -1; t <= 1; t += 2) {
     beginShape()
     for (var i = 0; i < 180; i += 0.1) {
       var index = floor(map(i, 0, 180, 0, wave.length -1))
   
-      var r = map(wave[index], -1, 1, 150, 300)
+      var r = map(wave[index], -1, 1, 50, 300)
 
       var x = r * sin(i) * t
       var y = r * cos(i) * t
